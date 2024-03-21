@@ -2,7 +2,8 @@ import requests
 import pandas as pd
 import json
 from datetime import date
-
+from dateutil import parser
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -22,7 +23,22 @@ def get_weather_info(latitude, longitude):
         # Print an error message if the request was not successful
         print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
         return None
+def get_daylight_info(latitude, longitude):
+    # API endpoint URL
+    api_url = f'https://api.sunrisesunset.io/json?lat={latitude}&lng={longitude}'
 
+    # Make a GET request to the API endpoint
+    response = requests.get(api_url)
+
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Parse the JSON response
+        daylight_data = response.json()
+        return daylight_data
+    else:
+        # Print an error message if the request was not successful
+        print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
+        return None
 
 def get_forecast_info(url):
     # API endpoint URL
@@ -75,6 +91,23 @@ def analyze_data_structure(data,name="", indent =0):
 
 
 
+def format_time(input):
+
+
+    temp = forecast_json.get('properties',{}).get(input).get('values')
+
+    for y in temp:
+        start_time = y.get('validTime').split('/')
+        y['validTime']=parser.parse(start_time[0])
+    
+    out = forecast_json.get('properties',{}).get(input)
+    out['values'] = pd.DataFrame(temp)
+    
+    return out
+
+
+
+
 if __name__ == "__main__":
 
 
@@ -85,44 +118,68 @@ if __name__ == "__main__":
 
     # Get weather information for the specified coordinates
     weather_info = get_weather_info(latitude, longitude)
-    #structure = analyze_data_structure(weather_info)
-    #print(structure,'weather data')
-    #print("test", weather_info)
+    daylight_info = get_daylight_info( latitude, longitude)
+    print(daylight_info)
+
     # Display the retrieved data
     if weather_info:
+
+
         forecast_url = weather_info.get('properties', {}).get('forecastGridData')
         forecast_json = get_forecast_info(forecast_url)
         structure = analyze_data_structure(forecast_json)
         print("Weather Information:")
         print("Location:", weather_info.get('properties', {}).get('relativeLocation', {}).get('properties', {}).get('city'))
         print("Forecast URL:", weather_info.get('properties', {}).get('forecast'))
-        #print("Forecast:", structure)
+
 
         
 
         tempForecast = forecast_json.get('properties',{}).get('temperature',{}).get('values')
+
+        for x in tempForecast:
+            start_time = x.get('validTime').split('/')
+            x['validTime']=parser.parse(start_time[0])
+
         df = pd.DataFrame(tempForecast)
-        print(df)
 
 
-        print(type(df.loc[1].get('validTime')))
-        dewPointForecast = forecast_json.get('properties',{}).get('dewpoint')
-        maxTemperatureForecast = forecast_json.get('properties',{}).get('maxTemperature')
-        minTemperatureForecast = forecast_json.get('properties',{}).get('minTemperature')
-        relativeHumidityForecast = forecast_json.get('properties',{}).get('relativeHumidity')
-        apparentTemperatureForecast = forecast_json.get('properties',{}).get('apparentTemperature')
-        wetBulbGlobeTemperatureForecast = forecast_json.get('properties',{}).get('wetBulbGlobeTemperature')
-        skyCoverForecast = forecast_json.get('properties',{}).get('skyCover')
-        windSpeedForecast = forecast_json.get('properties',{}).get('windSpeed')
-        windGustForecast = forecast_json.get('properties',{}).get('windGust')
-        probabilityOfPrecipitationForecast = forecast_json.get('properties',{}).get('probabilityOfPrecipitation')
-        quantitativePrecipitationForecast = forecast_json.get('properties',{}).get('quantitativePrecipitation')
-        ceilingHeightForecast = forecast_json.get('properties',{}).get('ceilingHeight')
-        visibilityForecast = forecast_json.get('properties',{}).get('visibility')
-        transportWindSpeedForecast = forecast_json.get('properties',{}).get('transportWindSpeed')
-        mixingHeightForecast = forecast_json.get('properties',{}).get('mixingHeight')
-        hainesIndexForecast = forecast_json.get('properties',{}).get('hainesIndex')
 
+        dewPointForecast= format_time('dewpoint')
+
+        maxTemperatureForecast = format_time('maxTemperature')
+
+        minTemperatureForecast = format_time('minTemperature')
+
+        relativeHumidityForecast = format_time('relativeHumidity')
+
+        apparentTemperatureForecast = format_time('apparentTemperature')
+
+        wetBulbGlobeTemperatureForecast = format_time('wetBulbGlobeTemperature')
+
+        skyCoverForecast = format_time('skyCover')
+
+        windSpeedForecast = format_time('windSpeed')
+
+        windGustForecast = format_time('windGust')
+
+        probabilityOfPrecipitationForecast = format_time('probabilityOfPrecipitation')
+
+        quantitativePrecipitationForecast = format_time('quantitativePrecipitation')
+
+        ceilingHeightForecast = format_time('ceilingHeight')
+
+        visibilityForecast = format_time('visibility')
+
+        transportWindSpeedForecast = format_time('transportWindSpeed')
+
+        mixingHeightForecast = format_time('mixingHeight')
+
+        hainesIndexForecast = format_time('hainesIndex')
+
+
+
+        #print('maxTemperatureForecast; ',maxTemperatureForecast)
 
 
 
