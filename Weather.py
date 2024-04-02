@@ -7,6 +7,15 @@ from dateutil.relativedelta import relativedelta
 
 
 
+
+"""Retrieves weather information for a given latitude and longitude using the National Weather Service API.
+    Parameters:
+        latitude (float): The latitude coordinate of the location.
+        longitude (float): The longitude coordinate of the location.
+    Returns:
+        dict or None: A dictionary containing weather information if the request is successful. 
+                    Returns None if the request fails.
+"""
 def get_weather_info(latitude, longitude):
     # API endpoint URL
     api_url = f'https://api.weather.gov/points/{latitude},{longitude}'
@@ -23,6 +32,20 @@ def get_weather_info(latitude, longitude):
         # Print an error message if the request was not successful
         print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
         return None
+    
+
+
+
+
+""" Retrieves daylight information for a given latitude and longitude using the Sunrise-Sunset API.
+    Args:
+        latitude (float): The latitude coordinate of the location.
+        longitude (float): The longitude coordinate of the location.
+    Returns:
+        dict or None: A dictionary containing daylight information if the request was successful,
+        otherwise None. The dictionary typically includes keys such as 'sunrise', 'sunset', 'solar_noon', etc.,
+        providing corresponding time information.
+"""
 def get_daylight_info(latitude, longitude):
     # API endpoint URL
     api_url = f'https://api.sunrisesunset.io/json?lat={latitude}&lng={longitude}'
@@ -39,6 +62,18 @@ def get_daylight_info(latitude, longitude):
         # Print an error message if the request was not successful
         print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
         return None
+
+
+
+
+""" Retrieves forecast information from a provided API endpoint URL.
+    Args:
+        url (str): The URL of the API endpoint providing forecast data.
+    Returns:
+        dict or None: A dictionary containing forecast information if the request was successful,
+        otherwise None. The structure of the dictionary depends on the format of the forecast data provided
+        by the API.
+"""
 
 def get_forecast_info(url):
     # API endpoint URL
@@ -58,16 +93,16 @@ def get_forecast_info(url):
         return None
 
 
-def analyze_data_structure(data,name="", indent =0):
-    """
-    Analyze the type of input data and recursively analyze nested elements.
 
+
+""" Analyze the type of input data and recursively analyze nested elements.
     Parameters:
     - data: dict, set, tuple, or list
-
     Returns:
     - dict: Dictionary containing the type of the input and the types of its elements (if any).
-    """
+"""
+def analyze_data_structure(data, name="", indent =0):
+
     result = f"{indent * '  '}{type(data).__name__}"
 
     if name:
@@ -87,10 +122,17 @@ def analyze_data_structure(data,name="", indent =0):
 
     return result
 
-# Example usage:
 
 
 
+""" Formats time data retrieved from a forecast JSON object.
+    Args:
+        input (str): The key to retrieve time data from the forecast JSON object.
+        forecast_json (dict): A JSON object containing forecast data.
+    Returns:
+        dict: A dictionary containing formatted time data. It includes a DataFrame under the 'values' key,
+        with each row representing a time interval and its corresponding data.
+"""
 def format_time(input):
 
 
@@ -110,10 +152,9 @@ def format_time(input):
 
 if __name__ == "__main__":
 
-
     # Display the result
     # Example coordinates (replace with your desired coordinates)
-    latitude = 39.6444
+    latitude = 39.6167
     longitude = -105.8486
 
     # Get weather information for the specified coordinates
@@ -133,18 +174,8 @@ if __name__ == "__main__":
         print("Forecast URL:", weather_info.get('properties', {}).get('forecast'))
 
 
-        
-
-        tempForecast = forecast_json.get('properties',{}).get('temperature',{}).get('values')
-
-        for x in tempForecast:
-            start_time = x.get('validTime').split('/')
-            x['validTime']=parser.parse(start_time[0])
-
-        df = pd.DataFrame(tempForecast)
-
-
-
+        tempForecast = format_time('temperature')
+        print(tempForecast)
         dewPointForecast= format_time('dewpoint')
 
         maxTemperatureForecast = format_time('maxTemperature')
