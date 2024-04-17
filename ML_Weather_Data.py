@@ -3,7 +3,8 @@ import pandas as pd
 
 # Path to the CSV file
 csv_file_path = r"C:\Users\aleck\OneDrive\Documents\GitHub\Weather\Weather_Data.csv"
-
+df = pd.read_csv(csv_file_path)
+#print("df Head: ",df.columns)
 def read_csv_to_numpy(csv_file_path):
     try:
         # Read the CSV file into a pandas DataFrame
@@ -20,11 +21,11 @@ def read_csv_to_numpy(csv_file_path):
 
 # Call the function to read CSV and convert to NumPy array
 weather_data_array = read_csv_to_numpy(csv_file_path)
-
+"""
 print(weather_data_array[0][5])
 print(type(weather_data_array[0][5]))
 print(pd.isnull(weather_data_array[0][5]))
-
+"""
 
 def remove_columns_with_majority_null(data_array):
     """
@@ -42,14 +43,16 @@ def remove_columns_with_majority_null(data_array):
     # Calculate the percentage of null values in each column
     null_percentages = df.isnull().mean()
 
-    # Find columns with null percentage greater than or equal to 0.8 (80%)
-    columns_to_remove = null_percentages[null_percentages >= 0.9].index
+    # Find columns with null percentage greater than or equal to 0.9 (90%)
+    columns_to_remove = null_percentages[null_percentages >= 1].index
     
     removed_columns = ""
+    column_names = list(df.columns.values)
+
     for x in columns_to_remove:
-        removed_columns= removed_columns+", "+str(x)
-    print("removed columns: ", removed_columns)
+        removed_columns= removed_columns+", "+ x
     print("columns_to_remove: ", columns_to_remove)
+    print("columns_to_remove_length: ", len(columns_to_remove))
     # Remove columns with high null percentage
     cleaned_df = df.drop(columns=columns_to_remove)
 
@@ -64,14 +67,14 @@ print("Original data array:")
 #print(weather_data_array)
 
 # Remove columns with majority null values
-cleaned_data_array = remove_columns_with_majority_null(weather_data_array)
+cleaned_data_array = remove_columns_with_majority_null(df)
 
-print("\nCleaned data array (removed columns with majority null values):")
-print(cleaned_data_array)
+#print("\nCleaned data array (removed columns with majority null values):")
+#print(cleaned_data_array)
 
-if weather_data_array is not None:
+"""if weather_data_array is not None:
     print("Weather data successfully loaded into NumPy array:")
     print(weather_data_array)
 else:
     print("Failed to load weather data into NumPy array.")
-
+"""

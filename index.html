@@ -20,14 +20,26 @@
     <div id="weatherInfo"></div>
 
     <script>
+        
+
+
         document.getElementById("weatherForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent the form from submitting normally
 
             // Get latitude and longitude values from the form
             var latitude = document.getElementById("latitude").value;
             var longitude = document.getElementById("longitude").value;
-
+            fetchWeatherData(location);
         });
+
+        function displayWeatherData(weatherData) {
+            // Update the HTML elements with weather data (e.g., temperature, description)
+            document.getElementById('weatherInfo').textContent = weatherData;
+            
+            // Update other HTML elements as needed
+        }
+
+
     </script>
 </body>
 </html>
