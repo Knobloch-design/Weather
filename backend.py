@@ -15,13 +15,40 @@ def page_not_found(e):
 def internal_server_error(e):
     return render_template('500.html'), 500
 
-@app.route('/weather', methods=['POST'])
-def get_weather_info(latitude, longitude):
+
+@app.route('/weather', methods=['GET'])
+def get_weather():
+
+    variable_value = request.args.get('position')
+
+    longitude,latitude = variable_value.split(",")
+    longitude,latitude = float(longitude),float(latitude)
+
+    api_url = f'https://api.weather.gov/points/{latitude},{longitude}'
+    response = requests.get(api_url)
+
+    print(response)
     
+    if response.status_code == 200:
+        # Parse the JSON response
+        weather_data = response.json()
+        return weather_data
+    else:
+        # Print an error message if the request was not successful
+        print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
+        return None
+
+
+
+
+
+@app.route('/backend', methods=['GET'])
+def get_weather_info():
     """
     Function to fetch weather information based on latitude and longitude coordinates.
     This function can be replaced with your actual weather API integration.
     """
+
     # Example API URL (Replace with your actual weather API URL)
     api_url = f'https://api.weather.gov/points/{latitude},{longitude}'
     

@@ -29,12 +29,34 @@
             // Get latitude and longitude values from the form
             var latitude = document.getElementById("latitude").value;
             var longitude = document.getElementById("longitude").value;
-            fetchWeatherData(location);
+            fetchWeatherData(longitude,latitude);
         });
+
+        function fetchWeatherData(longitude,latitude) {
+
+            console.log('longitude',longitude,'latitude',latitude)
+            
+            position = [longitude,latitude]
+            
+            //const url = `http://backend-server-url/endpoint?position=${position}`;
+
+            // Make an AJAX POST request to the backend
+            fetch(`http://127.0.0.1:5000/weather?position=${position}`, {
+
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Process the weather data received from the backend
+                displayWeatherData(data);
+            })
+            .catch(error => console.error('Error fetching weather data:', error));
+        }
 
         function displayWeatherData(weatherData) {
             // Update the HTML elements with weather data (e.g., temperature, description)
-            document.getElementById('weatherInfo').textContent = weatherData;
+            document.getElementById('weatherInfo').textContent = weatherData.condition;
+            document.getElementById('weatherInfo').textContent = weatherData.temperature;
+            console.log('Weather Data:', weatherData);
             
             // Update other HTML elements as needed
         }

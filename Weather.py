@@ -16,6 +16,8 @@ from dateutil.relativedelta import relativedelta
         dict or None: A dictionary containing weather information if the request is successful. 
                     Returns None if the request fails.
 """
+
+
 def get_weather_info(latitude, longitude):
     # API endpoint URL
     api_url = f'https://api.weather.gov/points/{latitude},{longitude}'
