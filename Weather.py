@@ -4,7 +4,7 @@ import json
 from datetime import date
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
-
+from LinkedTime import hourWeather, dayWeather
 
 
 
@@ -177,7 +177,23 @@ if __name__ == "__main__":
 
 
         tempForecast = format_time('temperature')
-        print(tempForecast)
+        LinkedList = hourWeather(0, 0)
+        data = tempForecast.get('values')
+        for x in range(len(data)):
+            print(data.loc[x].get('validTime'))
+            LinkedList = hourWeather(data.loc[x].get('validTime'), data.loc[x].get('value'),prev=LinkedList)
+        print("----------MIDDLE-----------")
+        #print("test: ",LinkedList.prev.temp)
+        temp = LinkedList        
+        while(temp.prev != None):
+            print(temp.timeStart)
+            temp = temp.prev
+            
+
+            
+
+        #for x in tempForecast:
+        #    node = hourWeather
         dewPointForecast= format_time('dewpoint')
 
         maxTemperatureForecast = format_time('maxTemperature')
