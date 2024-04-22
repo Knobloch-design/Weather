@@ -38,6 +38,7 @@ an hour object needs to store:
 """
 
 class dayWeather:
+
     
     def __init__(self, date, sunrise, sunset, maxtemp, mintemp, visibility, prev = None, next = None):
         self.date = date
@@ -64,6 +65,7 @@ class dayWeather:
         
     def get_prev_day(self):
         return self.prev
+    
 
 
 
@@ -71,13 +73,13 @@ class dayWeather:
 
 class hourWeather:
 
-    def __init__(self, timeStart,temp = None,dewpoint = None,relativeHumidity = None, skycover = None, windspeed = None, prev = None, next = None):
+    def __init__(self, timeStart = None,tempForecast = None,dewPointForecast = None,relativeHumidityForecast = None, skyCoverForecast = None, windSpeedForecast = None, prev = None, next = None):
         self.timeStart = timeStart
-        self.temp = temp
-        self.dewpoint = dewpoint
-        self.relativeHumidity = relativeHumidity
-        self.skycover = skycover
-        self.windspeed = windspeed
+        self.tempForecast = tempForecast
+        self.dewPointForecast = dewPointForecast
+        self.relativeHumidityForecast = relativeHumidityForecast
+        self.skyCoverForecast = skyCoverForecast
+        self.windSpeedForecast = windSpeedForecast
 
         if prev != None:
             prev.set_next_hr(self)
@@ -99,12 +101,35 @@ class hourWeather:
     def get_prev_hr(self):
         return self.prev
     
-""" 
-if __name__ == '__main__':
-    test1 = hourWeather(1,2,3,4,5,6,7)
-    test2 = hourWeather(2,3,4,5,6,7,8,test1)
-    print(test1.dewpoint)
-    print(test2.prev.dewpoint)
-    print(test1.next.dewpoint)
-    print(test2.next)
+    def insertNext(self, Node):
+        self.next.prev = Node
+        Node.next = self.next
+        Node.prev = self
+        self.next = Node
+
+    def getHead(self):
+
+        if self.prev == None:
+            print("got here")
+            print(type(self))
+
+            return self
+        else:
+            print(self.tempForecast)
+            return self.prev.getHead()
+            
+
+
+"""
+test1 = hourWeather(1,1,1,1,1,1)
+test3 = hourWeather(3,3,3,3,3,3,test1)
+test2 = hourWeather(2,2,2,2,2,2)
+
+test1.insertNext(test2)
+print(test1.tempForecast)
+print(test2.tempForecast)
+print(test3.tempForecast)
+
+print(type(test3.getHead()))
+#print(node.tempForecast)
 """

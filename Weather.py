@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import json
+import datetime
 from datetime import date
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
@@ -16,6 +17,11 @@ from LinkedTime import hourWeather, dayWeather
         dict or None: A dictionary containing weather information if the request is successful. 
                     Returns None if the request fails.
 """
+
+
+
+
+
 
 
 def get_weather_info(latitude, longitude):
@@ -176,59 +182,76 @@ if __name__ == "__main__":
         print("Forecast URL:", weather_info.get('properties', {}).get('forecast'))
 
 
+        
+        
         tempForecast = format_time('temperature')
-        LinkedList = hourWeather(0, 0)
-        data = tempForecast.get('values')
-        for x in range(len(data)):
-            print(data.loc[x].get('validTime'))
-            LinkedList = hourWeather(data.loc[x].get('validTime'), data.loc[x].get('value'),prev=LinkedList)
-        print("----------MIDDLE-----------")
+
+
+        LinkedList = hourWeather(datetime.now())
+
+
+
         #print("test: ",LinkedList.prev.temp)
-        temp = LinkedList        
-        while(temp.prev != None):
-            print(temp.timeStart)
-            temp = temp.prev
-            
 
             
 
         #for x in tempForecast:
         #    node = hourWeather
+
+        
         dewPointForecast= format_time('dewpoint')
-
-        maxTemperatureForecast = format_time('maxTemperature')
-
-        minTemperatureForecast = format_time('minTemperature')
-
+        weather = {"dewPointForecast": dewPointForecast}
+        weather["tempForecast"] = tempForecast
         relativeHumidityForecast = format_time('relativeHumidity')
-
-        apparentTemperatureForecast = format_time('apparentTemperature')
-
-        wetBulbGlobeTemperatureForecast = format_time('wetBulbGlobeTemperature')
-
+        weather["relativeHumidityForecast"] = relativeHumidityForecast
         skyCoverForecast = format_time('skyCover')
-
+        weather["skyCoverForecast"] = skyCoverForecast
         windSpeedForecast = format_time('windSpeed')
-
-        windGustForecast = format_time('windGust')
-
-        probabilityOfPrecipitationForecast = format_time('probabilityOfPrecipitation')
-
-        quantitativePrecipitationForecast = format_time('quantitativePrecipitation')
-
-        ceilingHeightForecast = format_time('ceilingHeight')
-
+        weather["windSpeedForecast"] = windSpeedForecast
         visibilityForecast = format_time('visibility')
+        weather["visibilityForecast"] = visibilityForecast
 
+
+
+        for x in weather.keys():
+            print(x)
+            data = weather.get(x).get('values')
+            #print(data)
+            for y in range(len(data)):
+                kwargs = {str(x) : data.loc[y].get('value')}
+                if data.loc[y].get('validTime') < LinkedList.next.timeStart:
+                    LinkedList.insertNext(hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs))
+
+                
+                LinkedList = hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs ,prev=LinkedList)
+
+
+
+        """
+        windGustForecast = format_time('windGust')
+        weather["windGustForecast"] = windGustForecast
+        probabilityOfPrecipitationForecast = format_time('probabilityOfPrecipitation')
+        weather["probabilityOfPrecipitationForecast"] = probabilityOfPrecipitationForecast
+        quantitativePrecipitationForecast = format_time('quantitativePrecipitation')
+        weather["quantitativePrecipitationForecast"] = quantitativePrecipitationForecast
+        ceilingHeightForecast = format_time('ceilingHeight')
+        weather["ceilingHeightForecast"] = ceilingHeightForecast
+        apparentTemperatureForecast = format_time('apparentTemperature')
+        weather["apparentTemperatureForecast"] = apparentTemperatureForecast
+        wetBulbGlobeTemperatureForecast = format_time('wetBulbGlobeTemperature')
+        weather["wetBulbGlobeTemperatureForecast"] = wetBulbGlobeTemperatureForecast
+        maxTemperatureForecast = format_time('maxTemperature')
+        weather["maxTemperatureForecast"] = maxTemperatureForecast
+        minTemperatureForecast = format_time('minTemperature')
+        weather["minTemperatureForecast"] = minTemperatureForecast 
         transportWindSpeedForecast = format_time('transportWindSpeed')
-
+        weather["transportWindSpeedForecast"] = transportWindSpeedForecast
         mixingHeightForecast = format_time('mixingHeight')
-
+        weather["mixingHeightForecast"] = mixingHeightForecast
         hainesIndexForecast = format_time('hainesIndex')
+        weather["hainesIndexForecast"] = hainesIndexForecast
+        """
 
-
-
-        #print('maxTemperatureForecast; ',maxTemperatureForecast)
 
 
 
