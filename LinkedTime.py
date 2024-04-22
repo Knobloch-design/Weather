@@ -108,18 +108,47 @@ class hourWeather:
         self.next = Node
 
     def getHead(self):
-
         if self.prev == None:
-            print("got here")
-            print(type(self))
-
             return self
         else:
-            print(self.tempForecast)
             return self.prev.getHead()
+    
+    def getEnd(self):
+        if self.next == None:
+            return self
+        else:
+            return self.next.getEnd()
             
+    def getInfo(self):
+        info = {}
+        if(self.timeStart != None):
+            info["timestart"] = self.timeStart
+        if(self.tempForecast != None):
+            info["tempForecast"] = self.tempForecast
+        if(self.dewPointForecast != None):
+            info["dewPointForecast"] = self.dewPointForecast
+        if(self.relativeHumidityForecast != None):
+            info["relativeHumidityForecast"] = self.relativeHumidityForecast
+        if(self.skyCoverForecast != None):
+            info["skyCoverForecast"] = self.skyCoverForecast
+        if(self.windSpeedForecast != None):
+            info["windSpeedForecast"] = self.windSpeedForecast
 
+        return info
 
+    def addInfo(self,category,info):
+        if(category == "timestart"):
+            self.timestart = info
+        if(category == "tempForecast"):
+            self.tempForecast = info
+        if(category == "dewPointForecast"):
+            self.dewPointForecast = info
+        if(category == "relativeHumidityForecast"):
+            self.relativeHumidityForecast = info
+        if(category == "skyCoverForecast"):
+            self.skyCoverForecast = info
+        if(category == "windSpeedForecast"):
+            self.windSpeedForecast = info
 """
 test1 = hourWeather(1,1,1,1,1,1)
 test3 = hourWeather(3,3,3,3,3,3,test1)

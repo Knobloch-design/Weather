@@ -148,6 +148,7 @@ def format_time(input):
 
     for y in temp:
         start_time = y.get('validTime').split('/')
+        #print(type(parser.parse(start_time[0])))
         y['validTime']=parser.parse(start_time[0])
     
     out = forecast_json.get('properties',{}).get(input)
@@ -184,23 +185,15 @@ if __name__ == "__main__":
 
         
         
-        tempForecast = format_time('temperature')
+        
 
-
-        LinkedList = hourWeather(datetime.now())
-
-
-
-        #print("test: ",LinkedList.prev.temp)
-
-            
-
-        #for x in tempForecast:
-        #    node = hourWeather
-
+        #TODO fix timezones issue
+        LinkedList = hourWeather(pd.Timestamp.now())
+        print("timezone: ",pd.Timestamp.timetz()) 
         
         dewPointForecast= format_time('dewpoint')
         weather = {"dewPointForecast": dewPointForecast}
+        tempForecast = format_time('temperature')
         weather["tempForecast"] = tempForecast
         relativeHumidityForecast = format_time('relativeHumidity')
         weather["relativeHumidityForecast"] = relativeHumidityForecast
@@ -214,20 +207,35 @@ if __name__ == "__main__":
 
 
         for x in weather.keys():
-            print(x)
+            LinkedList = LinkedList.getHead()
+
             data = weather.get(x).get('values')
-            #print(data)
+            print(x)
             for y in range(len(data)):
-                kwargs = {str(x) : data.loc[y].get('value')}
-                if data.loc[y].get('validTime') < LinkedList.next.timeStart:
-                    LinkedList.insertNext(hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs))
+                print(LinkedList.getInfo())
+                kwargs = {x : data.loc[y].get('value')}
+                #print("timestart: ",LinkedList.timeStart)
+                #print(data.loc[y].get('validTime'))
+
+                while LinkedList.next != None and data.loc[y].get('validTime') <= LinkedList.timeStart:
+
+                    if data.loc[y].get('validTime') == LinkedList.timeStart:
+                        print("got here")
+                        LinkedList.addInfo(x,data.loc[y].get('value'))
+                    LinkedList = LinkedList.next 
+    
+                if  LinkedList.next != None and data.loc[y].get('validTime') > LinkedList.timeStart:
+                        LinkedList = LinkedList.prev
+                        LinkedList.insertNext(hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs))   
+                else:
+                    LinkedList = hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs ,prev=LinkedList)
 
                 
-                LinkedList = hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs ,prev=LinkedList)
-
-
-
         """
+        start = LinkedList.getHead()
+        while start.next != None:
+            print(start.getInfo())
+        
         windGustForecast = format_time('windGust')
         weather["windGustForecast"] = windGustForecast
         probabilityOfPrecipitationForecast = format_time('probabilityOfPrecipitation')
