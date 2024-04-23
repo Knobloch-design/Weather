@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
         #TODO fix timezones issue
         LinkedList = hourWeather(pd.Timestamp.now())
-        print("timezone: ",pd.Timestamp.timetz()) 
+        print("timezone: ",pd.Timestamp.now().timetz()) 
         
         dewPointForecast= format_time('dewpoint')
         weather = {"dewPointForecast": dewPointForecast}
