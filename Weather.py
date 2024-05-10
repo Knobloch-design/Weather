@@ -6,6 +6,8 @@ from datetime import date
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
 from LinkedTime import hourWeather, dayWeather
+import numpy as np
+from sklearn.datasets import load_iris
 
 
 
@@ -144,18 +146,21 @@ def analyze_data_structure(data, name="", indent =0):
 def format_time(input,timezone):
 
     temp = forecast_json.get('properties',{}).get(input).get('values')
-
+    
     for y in temp:
         start_time = y.get('validTime').split('/')
         #print(start_time[0])
         #y['validTime']=parser.parse(start_time[0])
         y['validTime']=pd.Timestamp(start_time[0],tz=timezone).tz_localize(None)
-    
-    out = forecast_json.get('properties',{}).get(input)
-    print('test line 155 ',out)
-    out['values'] = pd.DataFrame(temp)
+
+    temp = pd.DataFrame(temp)
+    temp.rename(columns={'value':input}, inplace=True)
+
+
+
+    #print('test line 155 ',out)
     #print("test line 156: ",type(out.get("values").get("validTime").loc[0]))
-    return out
+    return temp
 
 
 
@@ -188,33 +193,48 @@ if __name__ == "__main__":
         
         
         
-
+        """
         #TODO figure out why now's time is significantly different than the data's time by a couple hours 
         LinkedList = hourWeather(pd.Timestamp.now(tz = timezone).tz_localize(None))
         print("timezone1: ",pd.Timestamp.utcnow()) 
         print("timezone2: ",pd.Timestamp.now(tz = timezone).tz_localize(None))
+        """
+
+
         dewPointForecast= format_time('dewpoint',timezone)
-        print(dewPointForecast.get('values').describe())
-
-
-
-
-
-        weather = {"dewPointForecast": dewPointForecast}
         tempForecast = format_time('temperature',timezone)
-        weather["tempForecast"] = tempForecast
         relativeHumidityForecast = format_time('relativeHumidity',timezone)
-        weather["relativeHumidityForecast"] = relativeHumidityForecast
         skyCoverForecast = format_time('skyCover',timezone)
-        weather["skyCoverForecast"] = skyCoverForecast
         windSpeedForecast = format_time('windSpeed',timezone)
-        weather["windSpeedForecast"] = windSpeedForecast
+
+        weather = pd.merge(left = tempForecast,how= 'outer',right = dewPointForecast,on= 'validTime')
+        weather = pd.merge(left = weather,how= 'outer',right = relativeHumidityForecast,on= 'validTime')
+        weather = pd.merge(left = weather,how= 'outer',right = skyCoverForecast,on= 'validTime')
+        weather = pd.merge(left = weather,how= 'outer',right = windSpeedForecast,on= 'validTime')
+
+        #print("dewPointForecast: ",dewPointForecast)
+
+
+        #weather = pd.DataFrame({"dewPointForecast": dewPointForecast})
+
+
+        #print("weather: ",weather)
+        print(weather.describe())
+
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+            print(weather)
+
+        
+
+
+
+   
 
         #print(weather.describe())
         #visibilityForecast = format_time('visibility',timezone)
         #weather["visibilityForecast"] = visibilityForecast
 
-
+        """
 
         for x in weather.keys():
             LinkedList = LinkedList.getHead()
@@ -242,7 +262,7 @@ if __name__ == "__main__":
                     LinkedList = hourWeather(timeStart=data.loc[y].get('validTime'), **kwargs ,prev=LinkedList)
 
                 
-        """
+        
         start = LinkedList.getHead()
         while start.next != None:
             print(start.getInfo())
