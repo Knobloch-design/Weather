@@ -141,19 +141,20 @@ def analyze_data_structure(data, name="", indent =0):
         dict: A dictionary containing formatted time data. It includes a DataFrame under the 'values' key,
         with each row representing a time interval and its corresponding data.
 """
-def format_time(input):
-
+def format_time(input,timezone):
 
     temp = forecast_json.get('properties',{}).get(input).get('values')
 
     for y in temp:
         start_time = y.get('validTime').split('/')
-        #print(type(parser.parse(start_time[0])))
-        y['validTime']=parser.parse(start_time[0])
+        #print(start_time[0])
+        #y['validTime']=parser.parse(start_time[0])
+        y['validTime']=pd.Timestamp(start_time[0],tz=timezone).tz_localize(None)
     
     out = forecast_json.get('properties',{}).get(input)
+    print('test line 155 ',out)
     out['values'] = pd.DataFrame(temp)
-    
+    #print("test line 156: ",type(out.get("values").get("validTime").loc[0]))
     return out
 
 
@@ -169,7 +170,8 @@ if __name__ == "__main__":
     # Get weather information for the specified coordinates
     weather_info = get_weather_info(latitude, longitude)
     daylight_info = get_daylight_info( latitude, longitude)
-    print(daylight_info)
+    timezone = daylight_info.get('results').get('timezone')
+    print(daylight_info.get('results').get('timezone'))
 
     # Display the retrieved data
     if weather_info:
@@ -187,22 +189,30 @@ if __name__ == "__main__":
         
         
 
-        #TODO fix timezones issue
-        LinkedList = hourWeather(pd.Timestamp.now())
-        print("timezone: ",pd.Timestamp.now().timetz()) 
-        
-        dewPointForecast= format_time('dewpoint')
+        #TODO figure out why now's time is significantly different than the data's time by a couple hours 
+        LinkedList = hourWeather(pd.Timestamp.now(tz = timezone).tz_localize(None))
+        print("timezone1: ",pd.Timestamp.utcnow()) 
+        print("timezone2: ",pd.Timestamp.now(tz = timezone).tz_localize(None))
+        dewPointForecast= format_time('dewpoint',timezone)
+        print(dewPointForecast.get('values').describe())
+
+
+
+
+
         weather = {"dewPointForecast": dewPointForecast}
-        tempForecast = format_time('temperature')
+        tempForecast = format_time('temperature',timezone)
         weather["tempForecast"] = tempForecast
-        relativeHumidityForecast = format_time('relativeHumidity')
+        relativeHumidityForecast = format_time('relativeHumidity',timezone)
         weather["relativeHumidityForecast"] = relativeHumidityForecast
-        skyCoverForecast = format_time('skyCover')
+        skyCoverForecast = format_time('skyCover',timezone)
         weather["skyCoverForecast"] = skyCoverForecast
-        windSpeedForecast = format_time('windSpeed')
+        windSpeedForecast = format_time('windSpeed',timezone)
         weather["windSpeedForecast"] = windSpeedForecast
-        visibilityForecast = format_time('visibility')
-        weather["visibilityForecast"] = visibilityForecast
+
+        #print(weather.describe())
+        #visibilityForecast = format_time('visibility',timezone)
+        #weather["visibilityForecast"] = visibilityForecast
 
 
 
@@ -212,15 +222,16 @@ if __name__ == "__main__":
             data = weather.get(x).get('values')
             print(x)
             for y in range(len(data)):
-                print(LinkedList.getInfo())
+                #print(LinkedList.getInfo())
                 kwargs = {x : data.loc[y].get('value')}
                 #print("timestart: ",LinkedList.timeStart)
                 #print(data.loc[y].get('validTime'))
 
+                #TODO implement function 'find next time' that finds the next equal or 
                 while LinkedList.next != None and data.loc[y].get('validTime') <= LinkedList.timeStart:
 
                     if data.loc[y].get('validTime') == LinkedList.timeStart:
-                        print("got here")
+                        #print("got here")
                         LinkedList.addInfo(x,data.loc[y].get('value'))
                     LinkedList = LinkedList.next 
     
@@ -235,6 +246,7 @@ if __name__ == "__main__":
         start = LinkedList.getHead()
         while start.next != None:
             print(start.getInfo())
+            start = start.next
         
         windGustForecast = format_time('windGust')
         weather["windGustForecast"] = windGustForecast
