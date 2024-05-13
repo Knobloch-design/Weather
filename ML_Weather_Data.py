@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.tree import DecisionTreeRegressor
 
 # Path to the CSV file
 csv_file_path = r"C:\Users\aleck\OneDrive\Documents\GitHub\Weather\Weather_Data.csv"
@@ -57,7 +58,7 @@ def remove_columns_with_majority_null(data_array):
     cleaned_df = df.drop(columns=columns_to_remove)
 
     # Convert the cleaned DataFrame back to a NumPy array
-    cleaned_data_array = cleaned_df.to_numpy()
+    cleaned_data_array = pd.DataFrame(cleaned_df)
 
     return cleaned_data_array
 
@@ -68,6 +69,20 @@ print("Original data array:")
 
 # Remove columns with majority null values
 cleaned_data_array = remove_columns_with_majority_null(df)
+print(cleaned_data_array.columns)
+print(cleaned_data_array.describe())
+print(cleaned_data_array.head())
+keyFeatures = ['DATE', 'DailyAverageWindSpeed','DailyPeakWindSpeed', 'DailyPrecipitation','DailySustainedWindSpeed','HourlyDewPointTemperature',
+                'HourlyPrecipitation', 'HourlyPresentWeatherType','HourlyDryBulbTemperature','HourlyWetBulbTemperature',
+               'HourlyRelativeHumidity', 'HourlySkyConditions', 'HourlyWindGustSpeed', 'HourlyWindSpeed','Sunrise', 'Sunset' ]
+
+keyData = cleaned_data_array[keyFeatures]
+print(keyData.describe())
+y= cleaned_data_array['HourlyVisibility']
+model = DecisionTreeRegressor(random_state=1)
+model.fit(keyData, y)
+print("The predictions are")
+print(model.predict(keyData))
 
 #print("\nCleaned data array (removed columns with majority null values):")
 #print(cleaned_data_array)

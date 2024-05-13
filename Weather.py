@@ -211,7 +211,7 @@ if __name__ == "__main__":
         weather = pd.merge(left = weather,how= 'outer',right = relativeHumidityForecast,on= 'validTime')
         weather = pd.merge(left = weather,how= 'outer',right = skyCoverForecast,on= 'validTime')
         weather = pd.merge(left = weather,how= 'outer',right = windSpeedForecast,on= 'validTime')
-
+        
         #print("dewPointForecast: ",dewPointForecast)
 
 
