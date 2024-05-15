@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 # Path to the CSV file
 csv_file_path = r"C:\Users\aleck\OneDrive\Documents\GitHub\Weather\Weather_Data.csv"
@@ -70,19 +72,35 @@ print("Original data array:")
 # Remove columns with majority null values
 cleaned_data_array = remove_columns_with_majority_null(df)
 print(cleaned_data_array.columns)
-print(cleaned_data_array.describe())
-print(cleaned_data_array.head())
-keyFeatures = ['DATE', 'DailyAverageWindSpeed','DailyPeakWindSpeed', 'DailyPrecipitation','DailySustainedWindSpeed','HourlyDewPointTemperature',
-                'HourlyPrecipitation', 'HourlyPresentWeatherType','HourlyDryBulbTemperature','HourlyWetBulbTemperature',
-               'HourlyRelativeHumidity', 'HourlySkyConditions', 'HourlyWindGustSpeed', 'HourlyWindSpeed','Sunrise', 'Sunset' ]
+#print(cleaned_data_array.describe())
+#print(cleaned_data_array.head())
+#keyFeatures = ['DATE', 'DailyAverageWindSpeed','DailyPeakWindSpeed', 'DailyPrecipitation','DailySustainedWindSpeed','HourlyDewPointTemperature',
+#                'HourlyPrecipitation', 'HourlyPresentWeatherType','HourlyDryBulbTemperature','HourlyWetBulbTemperature',
+#               'HourlyRelativeHumidity', 'HourlySkyConditions', 'HourlyWindGustSpeed', 'HourlyWindSpeed','Sunrise', 'Sunset' ]
 
-keyData = cleaned_data_array[keyFeatures]
-print(keyData.describe())
+#keyData = cleaned_data_array[keyFeatures]
+x = cleaned_data_array['DATE']
+#print(keyData.describe())
 y= cleaned_data_array['HourlyVisibility']
-model = DecisionTreeRegressor(random_state=1)
-model.fit(keyData, y)
+a = cleaned_data_array['HourlyDryBulbTemperature']
+b = cleaned_data_array['HourlyWetBulbTemperature']
+
+
+fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
+print(a)
+
+ax.plot(x, x, label='HourlyDryBulbTemperature')  # Plot some data on the axes.
+#ax.plot(x, b, label='HourlyWetBulbTemperature')  # Plot more data on the axes...
+ax.set_xlabel('Time')  # Add an x-label to the axes.
+ax.set_ylabel('Temperature')  # Add a y-label to the axes.
+ax.set_title("Simple Plot")  # Add a title to the axes.
+ax.legend()  # Add a legend.
+fig.show()
+#DecisionTreeRegressor does not work with time variables
+#model = DecisionTreeRegressor(random_state=1)
+"""model.fit(keyData, y)
 print("The predictions are")
-print(model.predict(keyData))
+print(model.predict(keyData))"""
 
 #print("\nCleaned data array (removed columns with majority null values):")
 #print(cleaned_data_array)

@@ -8,7 +8,8 @@ from dateutil.relativedelta import relativedelta
 from LinkedTime import hourWeather, dayWeather
 import numpy as np
 from sklearn.datasets import load_iris
-
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 
 """Retrieves weather information for a given latitude and longitude using the National Weather Service API.
@@ -212,6 +213,28 @@ if __name__ == "__main__":
         weather = pd.merge(left = weather,how= 'outer',right = skyCoverForecast,on= 'validTime')
         weather = pd.merge(left = weather,how= 'outer',right = windSpeedForecast,on= 'validTime')
         
+        fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
+        
+        x = weather['validTime']
+        a = weather['temperature']
+        b = weather['dewpoint']
+        c = weather['skyCover']
+        d = weather['relativeHumidity']
+        e = weather['windSpeed']
+        print(x)
+        ax.plot(x, a, label='temperature')  # Plot some data on the axes.
+        ax.plot(x, b, label='dewpoint')  # Plot more data on the axes...
+        ax.plot(x, c, label='skyCover')  # Plot more data on the axes...
+        ax.plot(x, d, label='relativeHumidity')  # Plot more data on the axes...
+        ax.plot(x, e, label='windSpeed')  # Plot more data on the axes...
+        ax.set_xlabel('Time')  # Add an x-label to the axes.
+        ax.set_ylabel('Temperature')  # Add a y-label to the axes.
+        ax.set_title("Simple Plot")  # Add a title to the axes.
+        ax.legend()  # Add a legend.
+        plt.show()
+
+
+
         #print("dewPointForecast: ",dewPointForecast)
 
 
@@ -219,10 +242,9 @@ if __name__ == "__main__":
 
 
         #print("weather: ",weather)
-        print(weather.describe())
+        #print(weather.describe())
 
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-            print(weather)
+        
 
         
 
