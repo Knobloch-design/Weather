@@ -229,7 +229,7 @@ if __name__ == "__main__":
         ax.plot(x, e, label='windSpeed')  # Plot more data on the axes...
         ax.set_xlabel('Time')  # Add an x-label to the axes.
         ax.set_ylabel('Temperature')  # Add a y-label to the axes.
-        ax.set_title("Simple Plot")  # Add a title to the axes.
+        ax.set_title("Sample Plot")  # Add a title to the axes.
         ax.legend()  # Add a legend.
         plt.show()
 

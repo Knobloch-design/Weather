@@ -26,6 +26,8 @@ def get_weather():
 
     api_url = f'https://api.weather.gov/points/{latitude},{longitude}'
     response = requests.get(api_url).json()
+    print(response)
+    #TODO need to include catch and test case if api returns request but data is available for requested point
     forecast_url = response.get('properties', {}).get('forecastGridData')
     forecast_json = get_forecast_info(forecast_url)
 

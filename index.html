@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Information</title>
 </head>
+<!-- TODO include options to add North or West to avoid issue of negatives-->
 <body>
     <h1>Weather Information</h1>
     <form id="weatherForm">
@@ -21,6 +22,7 @@
         <!--TODO replace static coordinates with input coordinates-->
         <!--TODO resrict API Key-->
         <iframe
+            id = "GoogleMap"
             src="https://www.google.com/maps/embed/v1/view?key=AIzaSyBPTWIZMSozNo0gpMPPZUcfPfsfG8iepuc&center=-33.8569,151.2152&zoom=18&maptype=satellite"
             width="600" 
             height="450" 
@@ -43,7 +45,13 @@
             // Get latitude and longitude values from the form
             var latitude = document.getElementById("latitude").value;
             var longitude = document.getElementById("longitude").value;
+            var MapHeader = "https://www.google.com/maps/embed/v1/view?key=AIzaSyBPTWIZMSozNo0gpMPPZUcfPfsfG8iepuc&center="
+            var MapFooter = "&zoom=18&maptype=satellite"
+            let newLoc = MapHeader.concat(latitude.toString(),',',longitude.toString(),MapFooter)
+            document.getElementById("GoogleMap").src = newLoc
+            
             fetchWeatherData(longitude,latitude);
+
         });
 
         function fetchWeatherData(longitude,latitude) {
@@ -66,7 +74,7 @@
             // Update the HTML elements with weather data (e.g., temperature, description)
             //document.getElementById('weatherInfo').textContent = JSON.parse(weatherData);
             console.log('Weather Data:', weatherData);
-
+            
 
             var container = document.getElementById('weatherInfo');
             
